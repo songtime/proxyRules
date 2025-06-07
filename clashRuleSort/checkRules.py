@@ -27,7 +27,7 @@ def extract_routing_types(yaml_file):
     return routing_types
 
 if __name__ == '__main__':
-    yaml_file = "/Users/mac/Documents/GitHub/yaml/clashRule.yaml"
+    yaml_file = "/Users/mac/Library/Application Support/io.github.clash-verge-rev.clash-verge-rev/profiles/LgxPf2lSfTty.yaml"
   # 请确保文件路径正确
     routing_types = extract_routing_types(yaml_file)
     

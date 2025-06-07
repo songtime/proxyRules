@@ -1,0 +1,22 @@
+mixed-port: 1080
+allow-lan: true
+mode: rule
+log-level: info
+
+proxies:
+  - name: "🇭🇰 HKD Eons x1"
+    type: ss
+    server: hk01pro.etonfast.top
+    port: 31031
+    cipher: aes-128-gcm
+    password: 934e436f-132b-4c38-acca-c2ab1f19a3ff
+
+proxy-groups:
+  - name: "Proxy"
+    type: select
+    proxies:
+      - "🇭🇰 HKD Eons x1"
+
+rules:
+  - MATCH,Proxy
+
