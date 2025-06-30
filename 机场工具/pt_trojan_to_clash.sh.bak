@@ -1,0 +1,62 @@
+#!/bin/bash
+
+# 解析输入参数
+node_url="$1"
+
+# 校验是否以 trojan:// 开头
+if [[ "$node_url" != trojan://* ]]; then
+    echo "❌ 输入不是合法的 trojan:// 节点"
+    exit 1
+fi
+
+# 去除前缀
+url_body="${node_url#trojan://}"
+
+# 提取 tag（#之后）
+tag_raw=$(echo "$url_body" | awk -F'#' '{print $2}')
+tag=$(printf '%b' "$(echo -n "$tag_raw" | sed 's/%/\\x/g')")  # URL解码
+
+# 去除 tag 部分
+url_body=$(echo "$url_body" | awk -F'#' '{print $1}')
+
+# 提取参数部分（?之后）
+param_string=$(echo "$url_body" | awk -F'?' '{print $2}')
+main_part=$(echo "$url_body" | awk -F'?' '{print $1}')
+
+# 从 param_string 中提取参数
+sni=$(echo "$param_string" | grep -o 'sni=[^&]*' | cut -d= -f2)
+peer=$(echo "$param_string" | grep -o 'peer=[^&]*' | cut -d= -f2)
+allow_insecure=$(echo "$param_string" | grep -o 'allowInsecure=[^&]*' | cut -d= -f2)
+
+# 默认 fallback
+[[ -z "$sni" ]] && sni="$peer"
+[[ -z "$peer" ]] && peer="$sni"
+
+# 提取 password、host、port
+password=$(echo "$main_part" | cut -d@ -f1)
+host_port=$(echo "$main_part" | cut -d@ -f2)
+host=$(echo "$host_port" | cut -d: -f1)
+port=$(echo "$host_port" | cut -d: -f2)
+
+# 构造 YAML 配置
+cat <<EOF
+# 由脚本生成的最小 Clash Meta 配置
+mixed-port: 1080
+mode: global
+proxies:
+  - name: "$tag"
+    type: trojan
+    server: "$host"
+    port: $port
+    password: "$password"
+    sni: "$sni"
+    skip-cert-verify: ${allow_insecure:-false}
+    udp: true
+proxy-groups:
+  - name: "Proxy"
+    type: select
+    proxies:
+      - "$tag"
+rules:
+  - MATCH,Proxy
+EOF

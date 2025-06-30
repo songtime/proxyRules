@@ -1,0 +1,22 @@
+mixed-port: 1080
+allow-lan: false
+mode: global
+log-level: info
+
+proxies:
+  - name: "%F0%9F%87%B3%F0%9F%87%B1%20Netherlands"
+    type: ss
+    server: nl001.etonfast.top
+    port: 31019
+    cipher: "aes-128-gcm"
+    password: "934e436f-132b-4c38-acca-c2ab1f19a3ff"
+    udp: true
+
+proxy-groups:
+  - name: "auto"
+    type: select
+    proxies:
+      - "%F0%9F%87%B3%F0%9F%87%B1%20Netherlands"
+
+rules:
+  - MATCH,auto

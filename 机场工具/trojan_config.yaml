@@ -1,0 +1,25 @@
+mixed-port: 1080
+
+proxies:
+  - name: 🇺🇸美国 04 | 专线
+    type: trojan
+    server: us4.8f365af0-18b9-48f4-4683-85a7aaa33d7e.30d6a0d0.the-best-airport.com
+    port: 443
+    password: 6bfc6a21-2ff8-4293-9f02-5b690a915fb4
+    sni: new.download.the-best-airport.com
+    skip-cert-verify: true
+    alpn:
+      - http/1.1
+    network: tcp
+    # 以下参数也可选填 peer: 只对部分 trojan-go 生效
+    # peer: new.download.the-best-airport.com
+
+proxy-groups:
+  - name: 🚀 节点选择
+    type: select
+    proxies:
+      - 🇺🇸美国 04 | 专线
+
+rules:
+  - MATCH,🚀 节点选择
+
